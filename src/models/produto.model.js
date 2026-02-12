@@ -1,19 +1,36 @@
 import pool from '../config/db.js';
 
 const produtosModel = {
+
     selectAll: async () => {
-        const sql = 'SELECT * FROM produto;';
+        const sql = 'SELECT * FROM produtos;';
         const [rows] = await pool.execute(sql);
         return rows;
     },
-    insert: async () => {
-        insert: async (pProduto) => {
-            const sql = "INSERT INTO produtos (nomeProduto, idCategoria, valorProduto) VALUES(?,?,?);";
-            const values = [pProduto.nomeProduto, pProduto.idCategoria, pProduto.valorProduto];
-            const [rows] = await conn.execute(sql, values);
-            return rows;
-        }
+    selectById: async (id) => {
+        const sql = 'SELECT * FROM produtos WHERE idProduto = ?;';
+        const [rows] = await pool.execute(sql, [id]);
+        return rows[0];
+    },
+    insert: async (produto) => {
+        const sql = 'INSERT INTO produtos (nomeProduto, idCategoria, valorProduto, vinculoImagem, dataCad) VALUES (?, ?, ?, ?, NOW())';
+        const values = [ produto.nomeProduto, produto.idCategoria, produto.valorProduto, produto.vinculoImagem ];
+
+        const [result] = await pool.execute(sql, values);
+        return result;
+    },
+    update: async (id, produto) => {
+        const sql = 'UPDATE produtos SET nomeProduto=?, idCategoria=?, valorProduto=?, vinculoImagem=? WHERE idProduto=?';
+        const values = [ produto.nomeProduto, produto.idCategoria, produto.valorProduto, produto.vinculoImagem, id ];
+
+        const [result] = await pool.execute(sql, values);
+        return result;
+    },
+    delete: async (id) => {
+        const sql = 'DELETE FROM produtos WHERE idProduto=?';
+        const [result] = await pool.execute(sql, [id]);
+        return result;
     }
-}
+};
 
 export default produtosModel;

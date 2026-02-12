@@ -12,10 +12,10 @@ const verificaDir = (dir) => {
 }
 
 const createMulter = ({ folder, allowedTypes, fileSize }) => {
-    // Monta caminho do diretório base (uploads) + pasta
+    // Montar o caminho da base upload e paste
     const uploadDir = path.join(baseUploadDir, folder);
 
-    // Verifica se o diretório não existe para criar
+    // Verficar se a pasta ja existe
     verificaDir(uploadDir);
     const storage = multer.diskStorage({
         destination: (req, file, cb) => {
