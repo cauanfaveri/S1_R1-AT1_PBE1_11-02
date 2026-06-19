@@ -1,62 +1,43 @@
-
+// ✅ depois - usando o categoriaModel corretamente (igual ao produto.controller.js)
 import categoriaModel from "../models/categoria.model.js";
-
 
 const categoriaController = {
 
     criarCategoria: async (req, res) => {
         try {
-
             const { descricaoCategoria } = req.body;
-
-            const sql = 'INSERT INTO categorias (descricaoCategoria, dataCad) VALUES (?, NOW())';
-
-            const [result] = await pool.execute(sql, [descricaoCategoria]);
-
+            const result = await categoriaModel.insert({ descricaoCategoria }); // ✅
             res.status(201).json(result);
-
         } catch (error) {
             res.status(500).json({ error: error.message });
         }
     },
+
     listarCategorias: async (req, res) => {
         try {
-
-            const sql = 'SELECT * FROM categorias';
-            const [rows] = await pool.execute(sql);
-
+            const rows = await categoriaModel.selectAll(); // ✅
             res.json(rows);
-
         } catch (error) {
             res.status(500).json({ error: error.message });
         }
     },
+
     atualizarCategoria: async (req, res) => {
         try {
-
             const id = req.params.id;
             const { descricaoCategoria } = req.body;
-
-            const sql = 'UPDATE categorias SET descricaoCategoria=? WHERE idCategoria=?';
-
-            const [result] = await pool.execute(sql, [descricaoCategoria, id]);
-
+            const result = await categoriaModel.update(id, { descricaoCategoria }); // ✅
             res.json(result);
-
         } catch (error) {
             res.status(500).json({ error: error.message });
         }
     },
+
     deletarCategoria: async (req, res) => {
         try {
-
             const id = req.params.id;
-
-            const sql = 'DELETE FROM categorias WHERE idCategoria=?';
-            const [result] = await pool.execute(sql, [id]);
-
+            const result = await categoriaModel.delete(id); // ✅
             res.json(result);
-
         } catch (error) {
             res.status(500).json({ error: error.message });
         }

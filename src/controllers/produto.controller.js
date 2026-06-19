@@ -1,4 +1,3 @@
-
 import produtosModel from "../models/produto.model.js";
 
 const produtoController = {
