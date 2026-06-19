@@ -1,4 +1,4 @@
-import pool from "../config/db.js"
+
 import categoriaModel from "../models/categoria.model.js";
 
 
