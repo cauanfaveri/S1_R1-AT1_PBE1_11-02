@@ -1,4 +1,5 @@
 import express from 'express';
+import path from 'path';
 import produtoRoutes from './routes/produto.routes.js';
 import categoriaRoutes from './routes/categoria.routes.js';
 import { initializeDatabase } from './config/db.js';
@@ -21,6 +22,3 @@ initializeDatabase().then(() => {
 }).catch(err => {
     console.error("Erro ao inicializar o banco de dados:", err);
 });
-const router = express.Router();
-
-export default router;
