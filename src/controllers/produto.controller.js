@@ -14,7 +14,7 @@ const produtoController = {
 
         } catch (error) {
             res.status(500).json({ error: error.message });
-        }
+        }   
     },
     listarProdutos: async (req, res) => {
         const produtos = await produtosModel.selectAll();
