@@ -11,10 +11,13 @@ app.use('/produtos', produtoRoutes);
 app.use(express.json());
 app.use('/categorias', categoriaRoutes);
 
-app.listen(3000, () => {
-    console.log('Servidor rodando');
+initializeDatabase().then(() => {
+    app.listen(process.env.SERVER_PORT, () => {
+        console.log(`Servidor rodando na porta ${process.env.SERVER_PORT}`);
+    });
+}).catch(err => {
+    console.error("Erro ao inicializar o banco de dados:", err);
 });
-
 const router = express.Router();
 
 export default router;

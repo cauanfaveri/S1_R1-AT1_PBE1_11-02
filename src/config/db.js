@@ -1,24 +1,93 @@
-import mysql from 'mysql2/promise';
+ import mysql from 'mysql2/promise';
+import dotenv from 'dotenv';
 
-const pool = mysql.createPool({
-    host: 'localhost',
-    user: 'root',
-    password: '1234',
-    database: 'produtos11',
-    port: 3306,
-    waitForConnections: true, // Aguarda conexões livre
-    connectionLimit: 10, // Limita o número de conexões
-    queueLimit: 0 // Sem limite para a fila de conexão
-});
 
-(async () => {
-  try {
-    const connection = await pool.getConnection();
-    console.log('Conectando com o SQL');
-    connection.release();
-  } catch (error) {
-    console.error(`Erro pra conectar com o banco: ${error}`);
-  }
-})();
+// Singleton para a conexão com o banco de dados
+class Database {
+    static #instance = null;
+    #pool = null;
 
-export default pool;
+
+    #createPool() {
+        this.#pool = mysql.createPool({
+            host: process.env.DB_HOST,
+            user: process.env.DB_USER,
+            password: process.env.DB_PASSWORD,
+            database: process.env.DB_DATABASE,
+            port: process.env.DB_PORT,
+            waitForConnections: true,
+            connectionLimit: 100,
+            queueLimit: 0,
+            ssl: {
+                rejectUnauthorized: false
+            }
+        });
+    }
+
+
+    static getInstance() {
+        if (!Database.#instance) {
+            Database.#instance = new Database();
+            Database.#instance.#createPool();
+        }
+        return Database.#instance;
+    }
+
+
+    getPool() {
+        return this.#pool;
+    }
+}
+
+
+export const connection = Database.getInstance().getPool();
+
+
+export async function initializeDatabase() {
+    console.log("Inicializando o banco de dados e tabelas...");
+    try {
+        const tempConnection = await mysql.createConnection({
+            host: process.env.DB_HOST,
+            user: process.env.DB_USER,
+            password: process.env.DB_PASSWORD,
+            port: process.env.DB_PORT,
+            ssl: { rejectUnauthorized: false }
+        });
+
+
+        const dbName = process.env.DB_DATABASE || 'loja_informatica_1906';
+
+
+        await tempConnection.query(`CREATE DATABASE IF NOT EXISTS \`${dbName}\`;`);
+        await tempConnection.query(`USE \`${dbName}\`;`);
+
+
+        await tempConnection.query(`
+            CREATE TABLE IF NOT EXISTS categorias (
+            idCategoria    INT PRIMARY KEY AUTO_INCREMENT,
+    descricaoCategoria VARCHAR(100) NOT NULL,
+    dataCad        DATETIME DEFAULT NOW()
+);
+        `);
+
+
+        await tempConnection.query(`
+           CREATE TABLE IF NOT EXISTS produtos (
+    idProduto      INT PRIMARY KEY AUTO_INCREMENT,
+    idCategoria    INT,
+    nomeProduto    VARCHAR(100) NOT NULL,
+    valorProduto   DECIMAL(10,2) NOT NULL,
+    vinculoImagem  VARCHAR(255) NULL,
+    dataCad        DATETIME DEFAULT NOW(),
+    FOREIGN KEY (idCategoria) REFERENCES categorias(idCategoria)
+);
+        `);
+
+
+        await tempConnection.end();
+        console.log("Banco de dados e tabelas verificados/criados com sucesso.");
+    } catch (error) {
+        console.error("Erro ao criar o banco ou as tabelas:", error);
+        throw error;
+    }
+}
