@@ -1,6 +1,7 @@
 import express from 'express';
 import produtoRoutes from './routes/produto.routes.js';
 import categoriaRoutes from './routes/categoria.routes.js';
+import { initializeDatabase } from './config/db.js';
 // import categoriaController from './controllers/categoria.controller.js';
 
 const app = express();
