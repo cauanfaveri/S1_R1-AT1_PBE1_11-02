@@ -9,6 +9,8 @@ const app = express();
 app.use(express.json());
 app.use('/produtos', produtoRoutes);
 
+app.use('/images', express.static(path.join(process.cwd(), 'uploads/images')));
+
 app.use(express.json());
 app.use('/categorias', categoriaRoutes);
 
