@@ -1,5 +1,4 @@
-import pool from '../config/db.js';
-
+import { connection as pool } from '../config/db.js';
 const produtosModel = {
 
     selectAll: async () => {
